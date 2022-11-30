@@ -17,17 +17,48 @@
     "assetBundlePatterns": [
       "**/*"
     ],
+    "plugins": [
+      [
+        "react-native-cloud-store",
+        {
+          "iCloud": {
+            "kv": {
+              "enabled": true
+            },
+            "documents": [
+              {
+                "containerId": "iCloud.com.playground",
+                "enabled": true,
+                "visible": true,
+                "visibleName": "Cloud Store Playground"
+              }
+            ]
+          }
+        }
+      ]
+    ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.cloudstoreplayground",
+      "infoPlist": {
+        "iCloudContainerEnvironment": "Development",
+        "com.apple.developer.icloud-container-environment":"Development"
+      }
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "com.cloudstoreplayground"
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "9711400f-b2d3-4087-b898-657d899261ee"
+      }
     }
   }
 }
