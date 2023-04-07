@@ -1,38 +1,58 @@
-import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
-import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import IOSKVScreen from './screens/ioskv.screen';
-import IOSICloudScreen from './screens/iosicloud.screen';
-import IndexScreen from './screens/index.screen';
-
-const Stack = createNativeStackNavigator();
+import React from "react";
+import { View, Text, Button } from "react-native";
+import { cloudReadDirectoryAsync, commenceDownloadChain } from "./functions";
+import * as CloudStore from "react-native-cloud-store";
+import {
+  defaultICloudContainerPath,
+  PathUtils,
+} from "react-native-cloud-store";
+const iCloudDocumentDirectory = defaultICloudContainerPath + "/Documents";
 const App = () => {
+  React.useEffect(() => {
+    const downloadEvent = CloudStore.registerGlobalDownloadEvent();
+    return () => {
+      downloadEvent?.remove();
+    };
+  }, []);
+  const [files, setFiles] = React.useState([]);
+  const [successfulDownloads, seSuccessfulDownloads] = React.useState(0);
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen
-          name={'index'}
-          component={IndexScreen}
-          options={{
-            title:"cloud-store demo",
-          }}
-        />
-        <Stack.Screen
-          name={'ios-kv'}
-          component={IOSKVScreen}
-          options={{
-            title: 'Key-value Storage Demo',
-          }}
-        />
-        <Stack.Screen
-          name={'ios-icloud'}
-          component={IOSICloudScreen}
-          options={{
-            title: 'iCloud Demo',
-          }}
-        />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <View style={{ flex: 1, marginTop: 100, alignItems: "center" }}>
+      <Text>iCloud Download example issue.</Text>
+
+      <Button
+        title="Read Directory"
+        onPress={async () => {
+          setFiles(await cloudReadDirectoryAsync(iCloudDocumentDirectory));
+        }}
+      ></Button>
+      <Button
+        title="Start"
+        onPress={() => {
+          //
+          commenceDownloadChain({
+            items: files
+              .filter((file) => file.uri.includes(".icloud"))
+              .map((file) => file.uri),
+          })
+            .then(() => {
+              console.log("All downloads complete");
+            })
+            .catch((error) => {
+              console.error("Error in download chain:", error);
+            });
+        }}
+      ></Button>
+      <Text>{JSON.stringify(files?.[0])}</Text>
+      <Text>{JSON.stringify(files?.length)} Files</Text>
+      <Text>
+        {JSON.stringify(
+          files?.filter((file) => file.uri.includes(".icloud")).length
+        )}{" "}
+        Not Downloaded
+      </Text>
+    </View>
   );
 };
 

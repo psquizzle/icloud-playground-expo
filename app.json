@@ -39,7 +39,7 @@
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.cloudstoreplayground",
+      "bundleIdentifier": "com.psquizzle.cloudstoreplayground",
       "infoPlist": {
         "iCloudContainerEnvironment": "Development",
         "com.apple.developer.icloud-container-environment":"Development"
@@ -50,7 +50,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.cloudstoreplayground"
+      "package": "com.psquizzle.cloudstoreplayground"
     },
     "web": {
       "favicon": "./assets/favicon.png"

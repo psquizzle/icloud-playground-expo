@@ -7,7 +7,8 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Input from '../components/input';
 import Block from '../components/Block';
 import Button from '../components/Button';
-
+import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
+const CloudStoreDirect = NativeModules.CloudStoreModule;
 interface Props {}
 
 const IOSICloudScreen: FC<Props> = ({}) => {
@@ -31,7 +32,7 @@ const IOSICloudScreen: FC<Props> = ({}) => {
   );
 
   const [fileForDownload, setFileForDownload] = useState(
-    PathUtils.join(defaultICloudContainerPath, 'Documents/file-on-cloud.txt'),
+    PathUtils.join(defaultICloudContainerPath, 'Documents/test.txt'),
   );
   const [fileForStore, setFileForStore] = useState(
     FileSystem.documentDirectory,
@@ -83,6 +84,12 @@ const IOSICloudScreen: FC<Props> = ({}) => {
       r5.remove();
     };
   }, []);
+  useEffect(() => {
+    const downloadEvent = CloudStore.registerGlobalDownloadEvent()
+    return () => {
+      downloadEvent?.remove()
+    }
+  }, [])
 
   return (
     <KeyboardAwareScrollView
@@ -309,13 +316,42 @@ const IOSICloudScreen: FC<Props> = ({}) => {
           onChangeText={setFileForDownload}
           placeholder={'file path'}
         />
+                <Button
+          title={'delete'}
+          onPress={async () => {
+            try {
+              const uri ="file://" +encodeURI(defaultICloudContainerPath)+'/Documents/'
+              alert(defaultICloudContainerPath)
+              const dirs = await FileSystem.readDirectoryAsync(uri)
+              dirs.forEach(async(item)=>{
+                console.log(item)
+                try {
+                  FileSystem.deleteAsync(encodeURI(uri+item))
+
+                }
+                catch(e){
+                  console.log(e)
+                }
+              })
+              alert(dirs)
+          //  const status =   await FileSystem.deleteAsync(uri);
+
+         //   alert(status)
+           //   console.log('download called');
+            } catch (e) {
+              console.error(e);
+            }
+          }}
+        />
         <Button
           title={'download'}
           onPress={async () => {
             try {
-              await CloudStore.download(fileForDownload);
+            const status =   await CloudStoreDirect.download(defaultICloudContainerPath+'/Documents/.untitled1.icloud',{id:"test"});
+            alert(status)
               console.log('download called');
             } catch (e) {
+              alert(';')
               console.error(e);
             }
           }}
@@ -329,7 +365,7 @@ const IOSICloudScreen: FC<Props> = ({}) => {
         <Button
           title={'copy downloaded file to local'}
           onPress={async () => {
-            try {
+            try {x
               await FileSystem.copyAsync({from:fileForDownload, to:fileForStore});
               console.log('coped from icloud to local');
             } catch (e) {
